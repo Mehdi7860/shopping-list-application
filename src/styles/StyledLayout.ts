@@ -1,14 +1,7 @@
-import React, { useState } from "react";
-import { Button, Layout, Switch } from "antd";
-import { useTheme } from "./ThemeProvider";
 import styled from "styled-components";
-import ShoppingListForm from "./components/ShopingListForm/ShoppingListForm";
-import ShoppingListTable from "./components/ShoppingListTable/ShoppingListTable";
-import SalesReportChart from "./components/SalesReportChart/SalesReportChart";
+import {Layout} from "antd";
 
-const { Header, Content } = Layout;
-
-const StyledLayout = styled(Layout)<{ $theme: "light" | "dark" }>`
+export const StyledLayout = styled(Layout)<{ $theme: "light" | "dark" }>`
   min-height: 100vh;
   background: ${(props) => (props.$theme === "dark" ? "#141414" : "#f0f2f5")};
 
@@ -133,18 +126,18 @@ const StyledLayout = styled(Layout)<{ $theme: "light" | "dark" }>`
     font-weight: 700;
   }
 
-  .ant-table-row-hover-light:hover {
-    background-color: #f2f9ff !important;
-  }
+.ant-table-row-hover-light:hover > td {
+  background-color: #f2f9ff !important;
+}
+
+.ant-table-row-hover-dark:hover > td {
+  background-color: #777777 !important;
+}
   .ant-table-row-hover-light {
     font-family: Lato;
     font-size: 14px;
     line-height: 22px;
     font-weight: 400;
-  }
-
-  .ant-table-row-hover-dark:hover {
-    background-color: #777777 !important;
   }
 
   .ant-table-row-hover-dark {
@@ -174,73 +167,3 @@ const StyledLayout = styled(Layout)<{ $theme: "light" | "dark" }>`
   border-top-right-radius: 0 !important;
 }
 `;
-
-const MainLayout: React.FC = () => {
-  const { isDarkMode, toggleTheme } = useTheme();
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
-
-  return (
-    <StyledLayout $theme={isDarkMode ? "dark" : "light"}>
-      <Header>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <img src="/logo.svg" alt="App Logo" className="app-logo" />
-        </div>
-        <div className="theme-toggle">
-          <span className="theme-label">Dark Mode</span>
-          <Switch checked={isDarkMode} onChange={toggleTheme} />
-        </div>
-      </Header>
-
-      <div className="shopping-list-header">
-        <h2
-          style={{
-            color: isDarkMode ? "#fff" : "#101828",
-            margin: 0,
-            display: "flex",
-            fontFamily: "Proxima Nova Bold",
-            fontSize: "20px",
-            lineHeight: "28px",
-          }}
-        >
-          <img
-            src="/cart.svg"
-            alt="Cart Logo"
-            className="cart-logo"
-            style={{ marginRight: "8px" }}
-          />
-          Shopping List Application
-        </h2>
-        <div className="view-report-button">
-          <Button className="view-report-btn" onClick={showModal}>
-            <img src="/bars.svg" alt="bars" className="bars" /> View Report
-          </Button>
-        </div>
-      </div>
-
-      <Content>
-        <div>
-          <ShoppingListForm />
-        </div>
-        <div
-          style={{
-            background: isDarkMode ? "#1f1f1f" : "#fff",
-          }}
-        >
-          <ShoppingListTable onFilterChange={() => {}} />
-        </div>
-      </Content>
-
-      <SalesReportChart visible={isModalVisible} onClose={handleCancel} />
-    </StyledLayout>
-  );
-};
-
-export default MainLayout;

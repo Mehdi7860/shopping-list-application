@@ -20,11 +20,9 @@ import { useShoppingList } from "../../context/ShoppingListContext";
 import type { SorterResult } from "antd/es/table/interface";
 import { useTheme } from "../../ThemeProvider";
 
-// Helper function to calculate total price
 const calculateTotalPrice = (quantity: number, price: number) =>
   quantity * price;
 
-// Helper function to check if a date is today
 const isToday = (dateString: string) => {
   const today = new Date();
   const itemDate = new Date(dateString);
@@ -36,7 +34,6 @@ const isToday = (dateString: string) => {
   );
 };
 
-// Updated interface to include the key property
 interface ItemData {
   name: string;
   category: string;
@@ -47,7 +44,6 @@ interface ItemData {
   isNew?: boolean;
 }
 
-// Number of items to load at once
 const PAGE_SIZE = 10;
 
 const ShoppingListTable: React.FC<{
@@ -57,7 +53,7 @@ const ShoppingListTable: React.FC<{
     searchText?: string;
   }) => void;
 }> = ({ onFilterChange }) => {
-  const { shoppingList } = useShoppingList(); // Assuming the shopping list comes from context
+  const { shoppingList } = useShoppingList();
   const [filteredData, setFilteredData] = useState<ItemData[]>([]);
   const [displayedData, setDisplayedData] = useState<ItemData[]>([]);
   const [categories] = useState<string[]>([
@@ -90,7 +86,7 @@ const ShoppingListTable: React.FC<{
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // Default sort by date (newest first)
+  // Default sort by date
   const [sortedInfo, setSortedInfo] = useState<SorterResult<ItemData>>({
     columnKey: "date",
     order: "descend",
@@ -99,7 +95,7 @@ const ShoppingListTable: React.FC<{
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let filtered = [...shoppingList]; // Create a copy to avoid modifying the original
+    let filtered = [...shoppingList];
 
     // Apply filters
     if (selectedCategory) {
@@ -116,19 +112,17 @@ const ShoppingListTable: React.FC<{
       );
     }
 
-    // Sort by date (newest first) by default
+    // Sort by date
     filtered.sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
 
-    // Add unique keys for each item if not already present
     const dataWithKeys = filtered.map((item, index) => ({
       ...item,
       key: `${index}-${item.name}`,
     }));
 
     setFilteredData(dataWithKeys);
-    // Reset pagination when filters change
     setCurrentPage(1);
     setHasMore(dataWithKeys.length > PAGE_SIZE);
     setDisplayedData(dataWithKeys.slice(0, PAGE_SIZE));
@@ -146,13 +140,11 @@ const ShoppingListTable: React.FC<{
     onFilterChange,
   ]);
 
-  // Load more data when scrolling
   const loadMoreData = () => {
     if (loading || !hasMore) return;
 
     setLoading(true);
 
-    // Simulate API call delay
     setTimeout(() => {
       const nextPage = currentPage + 1;
       const newItems = filteredData.slice(0, nextPage * PAGE_SIZE);
@@ -164,17 +156,14 @@ const ShoppingListTable: React.FC<{
     }, 300);
   };
 
-  // Handle scroll event
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
 
-    // Load more when user scrolls to the bottom (with a small threshold)
     if (scrollHeight - scrollTop - clientHeight < 50 && !loading && hasMore) {
       loadMoreData();
     }
   };
 
-  // Handle table change for sorting
   const handleTableChange: TableProps<ItemData>["onChange"] = (
     pagination,
     filters,
@@ -184,7 +173,6 @@ const ShoppingListTable: React.FC<{
     setSortedInfo(sorterResult as SorterResult<ItemData>);
   };
 
-  // Render item name with a badge if it was added today
   const renderItemNameWithBadge = (name: string, date: string) => {
     if (isToday(date)) {
       return (
@@ -226,7 +214,6 @@ const ShoppingListTable: React.FC<{
     );
   };
 
-  // Table columns configuration
   const columns = [
     {
       title: <span className="table-header">Item Name</span>,
@@ -290,14 +277,12 @@ const ShoppingListTable: React.FC<{
     },
   ];
 
-  // Set row class for hover effect based on theme (light/dark)
   const rowClassName = () => {
     return isDarkMode
       ? "ant-table-row-hover-dark"
       : "ant-table-row-hover-light";
   };
 
-  // CSS to hide scrollbar properly with TypeScript
   const scrollContainerStyle: CSSProperties = {
     height: "400px",
     overflow: "auto",
@@ -379,7 +364,6 @@ const ShoppingListTable: React.FC<{
             </Space>
           </Col>
         </Row>
-        {/* Table with scroll container with hidden scrollbar using className */}
         <div
           ref={scrollContainerRef}
           style={scrollContainerStyle}
@@ -387,14 +371,14 @@ const ShoppingListTable: React.FC<{
           onScroll={handleScroll}
         >
           <Table
-          className="shopping-list-table"
+            className="shopping-list-table"
             columns={columns}
             dataSource={displayedData}
-            pagination={false} // No pagination
-            rowClassName={rowClassName} // Apply rowClassName based on theme
+            pagination={false}
+            rowClassName={rowClassName}
             style={{ marginBottom: "0" }}
             onChange={handleTableChange}
-            scroll={{ x: true }} // Allow horizontal scrolling if needed
+            scroll={{ x: true }}
           />
           {loading && (
             <div style={{ textAlign: "center", padding: "12px 0" }}>

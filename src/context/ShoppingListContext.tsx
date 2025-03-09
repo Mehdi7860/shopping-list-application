@@ -5,10 +5,9 @@ import React, {
   useContext,
   useEffect,
 } from "react";
-import { ItemData } from "../types/itemData"; // Import the ItemData interface
+import { ItemData } from "../types/itemData";
 import mockData from "../json/mock-data.json";
 
-// Define the context type
 interface ShoppingListContextType {
   shoppingList: ItemData[];
   addItem: (item: ItemData) => void;
@@ -29,15 +28,15 @@ const ShoppingListContext = createContext<ShoppingListContextType>({
   clearList: () => {},
 });
 
-// Create a provider component
+
 export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  // Initialize state from localStorage if available, otherwise use mockData
+
   const [shoppingList, setShoppingList] = useState<ItemData[]>(() => {
     try {
       const storedData = localStorage.getItem(STORAGE_KEY);
-      // If we have stored data, use it; otherwise use the mock data
+      
       return storedData ? JSON.parse(storedData) : mockData;
     } catch (error) {
       console.error("Error loading data from localStorage:", error);
@@ -45,7 +44,7 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
     }
   });
 
-  // Save to localStorage whenever shoppingList changes
+
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(shoppingList));
@@ -54,7 +53,7 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [shoppingList]);
 
-  // Add a new item to the shopping list (at the beginning for newest-first sorting)
+  // Add a new item to the shopping list
   const addItem = (item: ItemData) => {
     setShoppingList((prevList) => [item, ...prevList]);
   };
@@ -85,5 +84,5 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
   );
 };
 
-// Custom hook to use the shopping list context
+
 export const useShoppingList = () => useContext(ShoppingListContext);

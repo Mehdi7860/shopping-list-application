@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Card, Row, Col, Typography } from "antd";
 import { Bar } from "react-chartjs-2";
 import {
@@ -10,8 +10,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { useShoppingList } from "../../context/ShoppingListContext"; // Assuming you have this context
-import { ThemeContext } from "styled-components"; // For theme detection (light/dark)
+import { useShoppingList } from "../../context/ShoppingListContext";
 import { useTheme } from "../../ThemeProvider";
 
 // Register Chart.js components
@@ -24,7 +23,6 @@ ChartJS.register(
   Legend
 );
 
-// Define the type for the highest cost item
 interface HighestCostItem {
   price: number;
   name: string;
@@ -44,7 +42,7 @@ const SalesReportChart: React.FC<SalesReportChartProps> = ({
   const [chartData, setChartData] = useState<any>(null); // Chart data
   const [totalSpending, setTotalSpending] = useState(0);
   const [highestCostItem, setHighestCostItem] =
-    useState<HighestCostItem | null>(null); // Highest cost item
+    useState<HighestCostItem | null>(null);
   const [averageCost, setAverageCost] = useState(0);
 
   const { isDarkMode } = useTheme();
@@ -56,7 +54,6 @@ const SalesReportChart: React.FC<SalesReportChartProps> = ({
     let totalPrice = 0;
     let totalItemsInList = 0;
 
-    // Aggregate the total spending by category and calculate other metrics
     shoppingList.forEach((item) => {
       const totalPriceForItem = item.price * item.qty;
       total += totalPriceForItem;
@@ -64,26 +61,23 @@ const SalesReportChart: React.FC<SalesReportChartProps> = ({
       totalPrice += item.price;
       totalItemsInList += 1;
 
-      // Track the highest priced item
       if (item.price > highest.price) {
         highest = { price: item.price, name: item.name, qty: item.qty };
       }
     });
 
-    // Calculate average cost
     const avgCost = totalItemsInList ? totalPrice / totalItemsInList : 0;
 
     setTotalSpending(total);
     setHighestCostItem(highest);
     setAverageCost(avgCost);
 
-    // Prepare data for the chart: Group by category and subcategory
     const categoryData: { [key: string]: { [key: string]: number } } = {};
 
     shoppingList.forEach((item) => {
       const totalPriceForItem = item.price * item.qty;
       if (!categoryData[item.category]) {
-        categoryData[item.category] = {}; // Initialize the subcategory object
+        categoryData[item.category] = {};
       }
       if (categoryData[item.category][item.subcategory]) {
         categoryData[item.category][item.subcategory] += totalPriceForItem;
@@ -92,29 +86,28 @@ const SalesReportChart: React.FC<SalesReportChartProps> = ({
       }
     });
 
-    // Prepare data for the chart: Flatten the category-subcategory structure
     const chartLabels: string[] = [];
     const chartValues: number[] = [];
-    const categoryStartIndex: { [key: string]: number } = {}; // Track where each category starts in the labels
+    const categoryStartIndex: { [key: string]: number } = {};
 
     // First, push all categories to the chart
     Object.keys(categoryData).forEach((category, idx) => {
-      chartLabels.push(category); // Push the category label
-      categoryStartIndex[category] = chartLabels.length - 1; // Remember where the category starts
+      chartLabels.push(category);
+      categoryStartIndex[category] = chartLabels.length - 1;
     });
 
-    // Then, push all subcategories after the empty label (gap)
+    // Then, push all subcategories
     Object.keys(categoryData).forEach((category) => {
       Object.keys(categoryData[category]).forEach((subcategory) => {
-        chartLabels.push(subcategory); // Subcategory label
-        chartValues.push(categoryData[category][subcategory]); // Subcategory value
+        chartLabels.push(subcategory);
+        chartValues.push(categoryData[category][subcategory]);
       });
     });
 
     // Push category values into the chart
     Object.keys(categoryData).forEach((category) => {
       const subcategoryValues = Object.values(categoryData[category]);
-      chartValues.push(subcategoryValues.reduce((a, b) => a + b, 0)); // Sum up the subcategory values for the category
+      chartValues.push(subcategoryValues.reduce((a, b) => a + b, 0));
     });
 
     // Set the chart data
@@ -126,7 +119,7 @@ const SalesReportChart: React.FC<SalesReportChartProps> = ({
           data: chartValues,
           backgroundColor: "#91CAFF",
           borderRadius: 4,
-          fontFamily: 'Lato',
+          fontFamily: "Lato",
           fontWeight: "400",
           fontSize: "12px",
           lineHeight: "20px",
@@ -146,21 +139,20 @@ const SalesReportChart: React.FC<SalesReportChartProps> = ({
       x: {
         beginAtZero: true,
         ticks: {
-          // Rotate the x-axis labels if necessary to fit the subcategory text
           maxRotation: 90,
           minRotation: 45,
         },
         grid: {
-          display: false, // Hide X grid lines
+          display: false,
         },
       },
       y: {
         beginAtZero: true,
         ticks: {
-          callback: (value: any) => `$${value}`, // Add '$' to y-axis labels
+          callback: (value: any) => `$${value}`,
         },
         grid: {
-          display: false, // Hide Y grid lines
+          display: false,
         },
       },
     },
@@ -340,7 +332,7 @@ const SalesReportChart: React.FC<SalesReportChartProps> = ({
       {chartData ? (
         <Bar data={chartData} options={options} />
       ) : (
-        <p>Loading chart data...</p> // Show loading state if data is not ready
+        <p>Loading chart data...</p>
       )}
     </Modal>
   );

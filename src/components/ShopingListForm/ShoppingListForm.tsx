@@ -7,14 +7,13 @@ import {
   InputNumber,
   Card,
   ConfigProvider,
-  Space,
 } from "antd";
 import { CalendarOutlined } from "@ant-design/icons";
 import { Calendar } from "antd";
 import { useTheme } from "../../ThemeProvider";
 import { useShoppingList } from "../../context/ShoppingListContext";
 import { ItemData } from "../../types/itemData";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 
 const { Option } = Select;
 
@@ -123,8 +122,8 @@ const ShoppingListForm: React.FC = () => {
           width: "100%",
           fontFamily: "Lato",
           fontWeight: "700",
-          fontSize:"14px",
-          lineHeight:"22px",
+          fontSize: "14px",
+          lineHeight: "22px",
           background: isDarkMode ? "#202020" : "#f0f2f5",
           padding: "24px 32px 8px 32px",
         }}
@@ -228,7 +227,7 @@ const ShoppingListForm: React.FC = () => {
               </Form.Item>
             </div>
 
-            {/* Custom Date Input with Fixed Height Container */}
+            {/* Custom Date Input */}
             <div style={{ minWidth: "150px", flex: 0.8 }}>
               <Form.Item
                 name="date"
