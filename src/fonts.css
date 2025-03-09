@@ -1,0 +1,16 @@
+/* Regular Font */
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('../public/fonts/ProximaNova-Regular.otf') format('opentype');
+    font-weight: normal; /* Regular */
+    font-style: normal;
+  }
+  
+  /* Semi-Bold Font (Weight 600) */
+  @font-face {
+    font-family: 'Proxima Nova Bold';
+    src: url('../public/fonts/Proxima Nova Semibold.otf') format('opentype');
+    font-weight: 600; /* Semi-Bold */
+    font-style: normal;
+  }
+  
