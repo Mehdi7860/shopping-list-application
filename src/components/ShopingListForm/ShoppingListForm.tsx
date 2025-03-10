@@ -1,34 +1,30 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Form, Input, Button, Select, ConfigProvider } from "antd";
 import {
-  Form,
-  Input,
-  Button,
-  Select,
-  InputNumber,
-  Card,
-  ConfigProvider,
-} from "antd";
+  FormCard,
+  FormContainer,
+  FormItemContainer,
+  StyledInputNumber,
+  CalendarContainer,
+  DateInput,
+  CalendarIcon,
+  CalendarDropdown,
+  AddButtonContainer,
+  AddButtonIcon,
+  AddButtonText,
+} from "../../styles/StyledForm";
 import { CalendarOutlined } from "@ant-design/icons";
 import { Calendar } from "antd";
 import { useTheme } from "../../ThemeProvider";
 import { useShoppingList } from "../../context/ShoppingListContext";
-import { ItemData } from "../../types/itemData";
+import {
+  FormValues,
+  SubcategoriesMap,
+  ItemData,
+} from "../../types/ShoppingListForm.types";
 import { Dayjs } from "dayjs";
 
 const { Option } = Select;
-
-interface FormValues {
-  itemName: string;
-  category: string;
-  subcategory: string;
-  quantity: number;
-  price: number;
-  date: string;
-}
-
-interface SubcategoriesMap {
-  [key: string]: string[];
-}
 
 const ShoppingListForm: React.FC = () => {
   const [form] = Form.useForm<FormValues>();
@@ -117,17 +113,7 @@ const ShoppingListForm: React.FC = () => {
 
   return (
     <ConfigProvider form={{ requiredMark: false }}>
-      <Card
-        style={{
-          width: "100%",
-          fontFamily: "Lato",
-          fontWeight: "700",
-          fontSize: "14px",
-          lineHeight: "22px",
-          background: isDarkMode ? "#202020" : "#f0f2f5",
-          padding: "24px 32px 8px 32px",
-        }}
-      >
+      <FormCard $isDarkMode={isDarkMode}>
         <Form
           form={form}
           name="shopping_list_item"
@@ -135,9 +121,9 @@ const ShoppingListForm: React.FC = () => {
           initialValues={{ date: selectedDate }}
           layout="horizontal"
         >
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
+          <FormContainer>
             {/* Item Name */}
-            <div style={{ minWidth: "200px", flex: 1 }}>
+            <FormItemContainer $flex={1}>
               <Form.Item
                 name="itemName"
                 label="Add New Item"
@@ -147,10 +133,10 @@ const ShoppingListForm: React.FC = () => {
               >
                 <Input placeholder="Enter item name" />
               </Form.Item>
-            </div>
+            </FormItemContainer>
 
             {/* Category */}
-            <div style={{ minWidth: "150px", flex: 1 }}>
+            <FormItemContainer $flex={1}>
               <Form.Item
                 name="category"
                 label="Category"
@@ -166,10 +152,10 @@ const ShoppingListForm: React.FC = () => {
                   ))}
                 </Select>
               </Form.Item>
-            </div>
+            </FormItemContainer>
 
-            {/* Subcategory*/}
-            <div style={{ minWidth: "150px", flex: 1 }}>
+            {/* Subcategory */}
+            <FormItemContainer $flex={1}>
               <Form.Item
                 name="subcategory"
                 label="Subcategory"
@@ -188,10 +174,10 @@ const ShoppingListForm: React.FC = () => {
                     ))}
                 </Select>
               </Form.Item>
-            </div>
+            </FormItemContainer>
 
             {/* Quantity */}
-            <div style={{ minWidth: "120px", flex: 0.7 }}>
+            <FormItemContainer $flex={0.7}>
               <Form.Item
                 name="quantity"
                 label="Quantity"
@@ -199,16 +185,12 @@ const ShoppingListForm: React.FC = () => {
                 labelCol={{ span: 24 }}
                 wrapperCol={{ span: 24 }}
               >
-                <InputNumber
-                  min={1}
-                  placeholder="0"
-                  style={{ width: "100%" }}
-                />
+                <StyledInputNumber min={1} placeholder="0" />
               </Form.Item>
-            </div>
+            </FormItemContainer>
 
             {/* Price */}
-            <div style={{ minWidth: "120px", flex: 0.7 }}>
+            <FormItemContainer $flex={0.7}>
               <Form.Item
                 name="price"
                 label="Price"
@@ -216,92 +198,62 @@ const ShoppingListForm: React.FC = () => {
                 labelCol={{ span: 24 }}
                 wrapperCol={{ span: 24 }}
               >
-                <InputNumber
+                <StyledInputNumber
                   min={0.01}
                   step={0.01}
                   precision={2}
                   placeholder="0.00"
-                  style={{ width: "100%" }}
                   addonAfter="$"
                 />
               </Form.Item>
-            </div>
+            </FormItemContainer>
 
             {/* Custom Date Input */}
-            <div style={{ minWidth: "150px", flex: 0.8 }}>
+            <FormItemContainer $flex={0.8}>
               <Form.Item
                 name="date"
                 label="Date"
                 labelCol={{ span: 24 }}
                 wrapperCol={{ span: 24 }}
               >
-                <div style={{ position: "relative" }}>
-                  <Input
+                <CalendarContainer>
+                  <DateInput
                     value={selectedDate}
                     placeholder="YYYY-MM-DD"
                     readOnly
                     onClick={() => setShowCalendar(!showCalendar)}
-                    style={{ cursor: "pointer", width: "100%" }}
                     suffix={
-                      <span
+                      <CalendarIcon
                         onClick={() => setShowCalendar(!showCalendar)}
-                        style={{ cursor: "pointer" }}
                       >
                         <CalendarOutlined style={{ fontSize: 18 }} />
-                      </span>
+                      </CalendarIcon>
                     }
                   />
                   {showCalendar && (
-                    <div
-                      ref={calendarRef}
-                      style={{
-                        position: "fixed",
-                        zIndex: 1000,
-                        background: "#fff",
-                        border: "1px solid #d9d9d9",
-                        borderRadius: "2px",
-                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-                      }}
-                    >
+                    <CalendarDropdown ref={calendarRef}>
                       <Calendar
                         fullscreen={false}
                         onSelect={handleDateSelect}
                       />
-                    </div>
+                    </CalendarDropdown>
                   )}
-                </div>
+                </CalendarContainer>
               </Form.Item>
-            </div>
+            </FormItemContainer>
 
             {/* Add Item Button */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-end",
-                minWidth: "120px",
-              }}
-            >
+            <AddButtonContainer>
               <Form.Item>
                 <Button type="primary" htmlType="submit">
-                  <span style={{ fontSize: "24px", marginBottom: "8px" }}>
-                    +
-                  </span>{" "}
-                  <span
-                    style={{
-                      fontFamily: "Lato",
-                      fontWeight: "700",
-                      fontSize: "16px",
-                      lineHeight: "24px",
-                    }}
-                  >
-                    Add Item
-                  </span>
+                  <AddButtonIcon>+</AddButtonIcon>{" "}
+                  <AddButtonText>Add Item</AddButtonText>
                 </Button>
               </Form.Item>
-            </div>
-          </div>
+            </AddButtonContainer>
+          </FormContainer>
         </Form>
-      </Card>
+      </FormCard>
     </ConfigProvider>
   );
 };

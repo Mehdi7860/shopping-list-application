@@ -1,24 +1,33 @@
-import React, { useState, useEffect, useRef, CSSProperties } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Table,
   Input,
   Select,
   Space,
-  Typography,
   Row,
   Col,
-  Card,
   ConfigProvider,
   Button,
-  Badge,
   TableProps,
   Spin,
 } from "antd";
+import {
+  StyledCard,
+  ItemCountTitle,
+  FilterContainer,
+  FilterLabel,
+  StyledBadge,
+  ItemName,
+  ScrollContainer,
+  EndOfListMessage,
+  LoadingContainer,
+} from "../../styles/StyledTable";
 import { SearchOutlined, ExportOutlined } from "@ant-design/icons";
 import { CSVLink } from "react-csv";
 import { useShoppingList } from "../../context/ShoppingListContext";
 import type { SorterResult } from "antd/es/table/interface";
 import { useTheme } from "../../ThemeProvider";
+import { ItemData, FilterValues } from "../../types/ShoppingListTable.types";
 
 const calculateTotalPrice = (quantity: number, price: number) =>
   quantity * price;
@@ -34,24 +43,10 @@ const isToday = (dateString: string) => {
   );
 };
 
-interface ItemData {
-  name: string;
-  category: string;
-  subcategory: string;
-  qty: number;
-  price: number;
-  date: string;
-  isNew?: boolean;
-}
-
 const PAGE_SIZE = 10;
 
 const ShoppingListTable: React.FC<{
-  onFilterChange: (filters: {
-    category?: string;
-    subcategory?: string;
-    searchText?: string;
-  }) => void;
+  onFilterChange: (filters: FilterValues) => void;
 }> = ({ onFilterChange }) => {
   const { shoppingList } = useShoppingList();
   const [filteredData, setFilteredData] = useState<ItemData[]>([]);
@@ -176,42 +171,13 @@ const ShoppingListTable: React.FC<{
   const renderItemNameWithBadge = (name: string, date: string) => {
     if (isToday(date)) {
       return (
-        <Space
-          style={{
-            fontFamily: "Lato",
-            fontWeight: "700",
-            fontSize: "16px",
-            lineHeight: "24px",
-          }}
-        >
-          {name}
-          <Badge
-            count="New"
-            style={{
-              backgroundColor: "#e6f7ff",
-              color: "#1890ff",
-              boxShadow: "0 0 0 1px #E3EEFF inset",
-              fontSize: "10px",
-              fontFamily: "Proxima Nova Bold",
-              borderRadius: "4px",
-              border: "1px solid #E3EEFF",
-            }}
-          />
+        <Space>
+          <ItemName>{name}</ItemName>
+          <StyledBadge count="New" />
         </Space>
       );
     }
-    return (
-      <span
-        style={{
-          fontFamily: "Lato",
-          fontWeight: "700",
-          fontSize: "16px",
-          lineHeight: "24px",
-        }}
-      >
-        {name}
-      </span>
-    );
+    return <ItemName>{name}</ItemName>;
   };
 
   const columns = [
@@ -283,15 +249,9 @@ const ShoppingListTable: React.FC<{
       : "ant-table-row-hover-light";
   };
 
-  const scrollContainerStyle: CSSProperties = {
-    height: "400px",
-    overflow: "auto",
-    marginBottom: "16px",
-  };
-
   return (
     <ConfigProvider>
-      <Card>
+      <StyledCard>
         {/* Filters */}
         <Row
           justify="space-between"
@@ -299,29 +259,13 @@ const ShoppingListTable: React.FC<{
           style={{ padding: "0 24px 0 24px" }}
         >
           <Col>
-            <Typography.Title
-              level={4}
-              style={{
-                fontFamily: "Lato",
-                fontWeight: "700",
-                fontSize: "20px",
-                lineHeight: "28px",
-                marginBottom: "1em",
-              }}
-            >
+            <ItemCountTitle level={4}>
               {filteredData.length} items
-            </Typography.Title>
+            </ItemCountTitle>
           </Col>
           <Col>
-            <Space
-              style={{
-                fontFamily: "Lato",
-                fontWeight: "700",
-                fontSize: "14px",
-                lineHeight: "22px",
-              }}
-            >
-              <div style={{ marginRight: 8 }}>Filter By</div>
+            <FilterContainer>
+              <FilterLabel>Filter By</FilterLabel>
               <Select
                 value={selectedCategory}
                 onChange={setSelectedCategory}
@@ -361,15 +305,10 @@ const ShoppingListTable: React.FC<{
                   Export Data
                 </Button>
               </CSVLink>
-            </Space>
+            </FilterContainer>
           </Col>
         </Row>
-        <div
-          ref={scrollContainerRef}
-          style={scrollContainerStyle}
-          className="hidden-scrollbar"
-          onScroll={handleScroll}
-        >
+        <ScrollContainer ref={scrollContainerRef} onScroll={handleScroll}>
           <Table
             className="shopping-list-table"
             columns={columns}
@@ -381,27 +320,15 @@ const ShoppingListTable: React.FC<{
             scroll={{ x: true }}
           />
           {loading && (
-            <div style={{ textAlign: "center", padding: "12px 0" }}>
+            <LoadingContainer>
               <Spin />
-            </div>
+            </LoadingContainer>
           )}
           {!hasMore && displayedData.length > 0 && (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "12px 0",
-                color: "#999",
-                fontFamily: "Lato",
-                fontWeight: "400",
-                fontSize: "14px",
-                lineHeight: "22px",
-              }}
-            >
-              End of List
-            </div>
+            <EndOfListMessage>End of List</EndOfListMessage>
           )}
-        </div>
-      </Card>
+        </ScrollContainer>
+      </StyledCard>
     </ConfigProvider>
   );
 };

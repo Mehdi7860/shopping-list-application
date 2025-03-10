@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Card, Row, Col, Typography } from "antd";
+import { Modal, Row, Col } from "antd";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -10,10 +10,23 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import {
+  ReportCard,
+  CardTitle,
+  CardValue,
+  CardDescription,
+  SectionTitle,
+  ModalTitle,
+} from "../../styles/StyledModal";
+import {
+  HighestCostItem,
+  SalesReportChartProps,
+  ChartData,
+  CategoryData,
+} from "../../types/SalesReportChart.types";
 import { useShoppingList } from "../../context/ShoppingListContext";
 import { useTheme } from "../../ThemeProvider";
 
-// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -23,23 +36,12 @@ ChartJS.register(
   Legend
 );
 
-interface HighestCostItem {
-  price: number;
-  name: string;
-  qty: number;
-}
-
-interface SalesReportChartProps {
-  visible: boolean;
-  onClose: () => void;
-}
-
 const SalesReportChart: React.FC<SalesReportChartProps> = ({
   visible,
   onClose,
 }) => {
   const { shoppingList } = useShoppingList(); // Get shopping list from context
-  const [chartData, setChartData] = useState<any>(null); // Chart data
+  const [chartData, setChartData] = useState<ChartData | null>(null); // Chart data
   const [totalSpending, setTotalSpending] = useState(0);
   const [highestCostItem, setHighestCostItem] =
     useState<HighestCostItem | null>(null);
@@ -72,7 +74,7 @@ const SalesReportChart: React.FC<SalesReportChartProps> = ({
     setHighestCostItem(highest);
     setAverageCost(avgCost);
 
-    const categoryData: { [key: string]: { [key: string]: number } } = {};
+    const categoryData: CategoryData = {};
 
     shoppingList.forEach((item) => {
       const totalPriceForItem = item.price * item.qty;
@@ -160,18 +162,7 @@ const SalesReportChart: React.FC<SalesReportChartProps> = ({
 
   return (
     <Modal
-      title={
-        <span
-          style={{
-            fontFamily: "Lato",
-            fontWeight: "600",
-            fontSize: "16px",
-            lineHeight: "24px",
-          }}
-        >
-          Report
-        </span>
-      }
+      title={<ModalTitle>Report</ModalTitle>}
       visible={visible}
       onCancel={onClose}
       footer={null}
@@ -180,155 +171,42 @@ const SalesReportChart: React.FC<SalesReportChartProps> = ({
       {/* Report Cards Section */}
       <Row gutter={16} style={{ marginTop: "20px" }}>
         <Col span={8}>
-          <Card
-            style={{
-              border: isDarkMode ? "1px solid #333333" : "1px solid #D9D9D9",
-            }}
-          >
-            <Typography.Title
-              level={3}
-              style={{
-                color: isDarkMode ? "#D9D9D9" : "#000000",
-                fontFamily: "Lato",
-                fontWeight: "600",
-                fontSize: "16px",
-                lineHeight: "24px",
-                marginTop: 0,
-              }}
-            >
+          <ReportCard $isDarkMode={isDarkMode}>
+            <CardTitle level={3} $isDarkMode={isDarkMode}>
               Total Spending
-            </Typography.Title>
-            <Typography.Title
-              level={3}
-              style={{
-                color: "#1677FF",
-                fontFamily: "Proxima Nova Bold",
-                fontSize: "20px",
-                lineHeight: "28px",
-                marginTop: 0,
-                marginBottom: "24px",
-              }}
-            >
-              ${totalSpending.toFixed(2)}
-            </Typography.Title>
-            <Typography.Text
-              style={{
-                fontFamily: "Lato",
-                fontWeight: "400",
-                fontSize: "14px",
-                lineHeight: "22px",
-                color: "#808080",
-              }}
-            >
+            </CardTitle>
+            <CardValue level={3}>${totalSpending.toFixed(2)}</CardValue>
+            <CardDescription>
               {shoppingList.length} items in total
-            </Typography.Text>
-          </Card>
+            </CardDescription>
+          </ReportCard>
         </Col>
         <Col span={8}>
-          <Card
-            style={{
-              border: isDarkMode ? "1px solid #333333" : "1px solid #D9D9D9",
-            }}
-          >
-            <Typography.Title
-              level={3}
-              style={{
-                color: isDarkMode ? "#D9D9D9" : "#000000",
-                fontFamily: "Lato",
-                fontWeight: "600",
-                fontSize: "16px",
-                lineHeight: "24px",
-                marginTop: 0,
-              }}
-            >
+          <ReportCard $isDarkMode={isDarkMode}>
+            <CardTitle level={3} $isDarkMode={isDarkMode}>
               Highest Cost Item
-            </Typography.Title>
-            <Typography.Title
-              level={3}
-              style={{
-                color: "#1677FF",
-                fontFamily: "Proxima Nova Bold",
-                fontSize: "20px",
-                lineHeight: "28px",
-                marginTop: 0,
-                marginBottom: "24px",
-              }}
-            >
+            </CardTitle>
+            <CardValue level={3}>
               ${highestCostItem?.price.toFixed(2)}
-            </Typography.Title>
-            <Typography.Text
-              style={{
-                fontFamily: "Lato",
-                fontWeight: "400",
-                fontSize: "14px",
-                lineHeight: "22px",
-                color: "#808080",
-              }}
-            >
+            </CardValue>
+            <CardDescription>
               {highestCostItem?.name} ({highestCostItem?.qty} unit)
-            </Typography.Text>
-          </Card>
+            </CardDescription>
+          </ReportCard>
         </Col>
         <Col span={8}>
-          <Card
-            style={{
-              border: isDarkMode ? "1px solid #333333" : "1px solid #D9D9D9",
-            }}
-          >
-            <Typography.Title
-              level={3}
-              style={{
-                color: isDarkMode ? "#D9D9D9" : "#000000",
-                fontFamily: "Lato",
-                fontWeight: "600",
-                fontSize: "16px",
-                lineHeight: "24px",
-                marginTop: 0,
-              }}
-            >
+          <ReportCard $isDarkMode={isDarkMode}>
+            <CardTitle level={3} $isDarkMode={isDarkMode}>
               Average Cost
-            </Typography.Title>
-            <Typography.Title
-              level={3}
-              style={{
-                color: "#1677FF",
-                fontFamily: "Proxima Nova Bold",
-                fontSize: "20px",
-                lineHeight: "28px",
-                marginTop: 0,
-                marginBottom: "24px",
-              }}
-            >
-              ${averageCost.toFixed(2)}
-            </Typography.Title>
-            <Typography.Text
-              style={{
-                color: "#808080",
-                fontFamily: "Lato",
-                fontWeight: "400",
-                fontSize: "14px",
-                lineHeight: "22px",
-              }}
-            >
-              Per Item
-            </Typography.Text>
-          </Card>
+            </CardTitle>
+            <CardValue level={3}>${averageCost.toFixed(2)}</CardValue>
+            <CardDescription>Per Item</CardDescription>
+          </ReportCard>
         </Col>
       </Row>
 
       {/* Chart Section */}
-      <Typography.Title
-        level={2}
-        style={{
-          fontFamily: "Lato",
-          fontWeight: "700",
-          fontSize: "20px",
-          lineHeight: "28px",
-          marginTop: "32px",
-        }}
-      >
-        Sales Report
-      </Typography.Title>
+      <SectionTitle level={2}>Sales Report</SectionTitle>
       {chartData ? (
         <Bar data={chartData} options={options} />
       ) : (

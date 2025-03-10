@@ -5,7 +5,7 @@ import React, {
   useContext,
   useEffect,
 } from "react";
-import { ItemData } from "../types/itemData";
+import { ItemData } from "../types/ShoppingListForm.types";
 import mockData from "../json/mock-data.json";
 
 interface ShoppingListContextType {
