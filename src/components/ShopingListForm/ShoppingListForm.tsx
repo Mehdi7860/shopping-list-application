@@ -160,7 +160,7 @@ const ShoppingListForm: React.FC = () => {
                 name="subcategory"
                 label="Subcategory"
                 rules={[
-                  { required: false, message: "Please select subcategory" },
+                  { required: true, message: "Please select subcategory" },
                 ]}
                 labelCol={{ span: 24 }}
                 wrapperCol={{ span: 24 }}
